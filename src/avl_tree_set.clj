@@ -128,6 +128,17 @@
           (avl-balance (assoc node :left left :right right))
           (avl-merge left right)))))
 
+(defn avl-equals? [node1 node2]
+  (cond
+    (and (nil? node1) (nil? node2)) true
+    (nil? node1) false
+    (nil? node2) false
+    :else (and
+           (= (:value node1) (:value node2))
+           (= (:height node1) (:height node2))
+           (avl-equals? (:left node1) (:left node2))
+           (avl-equals? (:right node1) (:right node2)))))
+
 (defn -main [])
 
 

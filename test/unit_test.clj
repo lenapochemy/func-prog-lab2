@@ -5,7 +5,8 @@
                                   avl-balance avl-balanced? avl-delete
                                   avl-right-fold avl-left-fold
                                   avl-right-rotate avl-left-rotate
-                                  avl-map avl-size avl-filter avl-merge]]))
+                                  avl-map avl-size avl-filter avl-merge
+                                  avl-equals?]]))
 
 (def node2 (->Node 2 nil nil 1))
 (def node10 (->Node 10 nil nil 1))
@@ -172,6 +173,10 @@
                     (avl-add 25)
                     (avl-add 23)
                     (avl-add 28))
+          node3 (-> (avl-empty)
+                    (avl-add 33)
+                    (avl-add 37)
+                    (avl-add 31))
           merged (avl-merge node1 node2)]
       (is (true? (avl-balanced? merged)))
       (is (= 23 (:value merged)))
@@ -186,4 +191,8 @@
       (is (= 25 (:value (:right merged))))
       (is (= 28 (:value (:right (:right merged)))))
       (is (nil? (:left (:right (:right merged)))))
-      (is (nil? (:right (:right (:right merged))))))))
+      (is (nil? (:right (:right (:right merged)))))
+
+      ;; monoid
+      (is (avl-equals? (avl-merge (avl-merge node1 node2) node3)
+                       (avl-merge node1 (avl-merge node2 node3)))))))
