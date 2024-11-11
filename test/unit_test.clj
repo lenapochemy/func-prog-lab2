@@ -1,19 +1,11 @@
 (ns unit-test
   (:require [clojure.test :refer [deftest is testing]]
             [avl-tree-set :refer [->Node avl-empty avl-add avl-node-height
-                                  avl-update-node-height
-                                  avl-contains?
-                                  avl-balance
-                                  avl-balanced?
-                                  avl-delete
-                                  avl-right-fold
-                                  avl-left-fold
-                                  avl-right-rotate
-                                  avl-left-rotate
-                                  avl-map
-                                  avl-size
-                                  avl-filter
-                                  avl-merge]]))
+                                  avl-update-node-height avl-contains?
+                                  avl-balance avl-balanced? avl-delete
+                                  avl-right-fold avl-left-fold
+                                  avl-right-rotate avl-left-rotate
+                                  avl-map avl-size avl-filter avl-merge]]))
 
 (def node2 (->Node 2 nil nil 1))
 (def node10 (->Node 10 nil nil 1))

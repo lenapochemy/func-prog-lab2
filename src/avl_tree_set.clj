@@ -2,50 +2,50 @@
 
 (defrecord Node [value left right height])
 
-(defn node-height [node]
+(defn avl-node-height [node]
   (if (nil? node) 0 (:height node)))
 
-(defn update-node-height [node]
+(defn avl-update-node-height [node]
   (if (nil? node) 0
-      (let [new-height (inc (max (node-height (:left node))
-                                 (node-height (:right node))))]
+      (let [new-height (inc (max (avl-node-height (:left node))
+                                 (avl-node-height (:right node))))]
         (assoc node :height new-height))))
 
-(defn balance-factor [node]
-  (- (node-height (:left node)) (node-height (:right node))))
+(defn avl-balance-factor [node]
+  (- (avl-node-height (:left node)) (avl-node-height (:right node))))
 
-(defn right-rotate [node]
+(defn avl-right-rotate [node]
   (let [left-node (:left node)
-        new-node (update-node-height (assoc node :left (:right left-node)))]
-    (update-node-height (assoc left-node :right new-node))))
+        new-node (avl-update-node-height (assoc node :left (:right left-node)))]
+    (avl-update-node-height (assoc left-node :right new-node))))
 
-(defn left-rotate [node]
+(defn avl-left-rotate [node]
   (let [right-node (:right node)
-        new-node (update-node-height (assoc node :right (:left right-node)))]
-    (update-node-height (assoc right-node :left new-node))))
+        new-node (avl-update-node-height (assoc node :right (:left right-node)))]
+    (avl-update-node-height (assoc right-node :left new-node))))
 
-(defn balance [node]
-  (let [bf (balance-factor node)]
+(defn avl-balance [node]
+  (let [bf (avl-balance-factor node)]
     (cond
-      (> bf 1) (if (>= (balance-factor (:left node)) 0)
-                 (right-rotate node)
-                 (right-rotate (assoc node :left (left-rotate (:left node)))))
-      (< bf -1) (if (<= (balance-factor (:right node)) 0)
-                  (left-rotate node)
-                  (left-rotate (assoc node :right (right-rotate (:right node)))))
-      :else (update-node-height node))))
+      (> bf 1) (if (>= (avl-balance-factor (:left node)) 0)
+                 (avl-right-rotate node)
+                 (avl-right-rotate (assoc node :left (avl-left-rotate (:left node)))))
+      (< bf -1) (if (<= (avl-balance-factor (:right node)) 0)
+                  (avl-left-rotate node)
+                  (avl-left-rotate (assoc node :right (avl-right-rotate (:right node)))))
+      :else (avl-update-node-height node))))
 
-(defn add [node value]
+(defn avl-add [node value]
   (if (nil? node)
     (->Node value nil nil 1)
     (let [diff (compare value (:value node))]
       (cond
         (zero? diff) (node)
-        (neg? diff) (balance (assoc node :left (add (:left node) value)))
+        (neg? diff) (avl-balance (assoc node :left (avl-add (:left node) value)))
         ;; pos?
-        :else (balance (assoc node :right (add (:right node) value)))))))
+        :else (avl-balance (assoc node :right (avl-add (:right node) value)))))))
 
-(defn min-value-node [node]
+(defn avl-min-value-node [node]
   (if (nil? (:left node))
     node
     (recur (:left node))))
@@ -54,17 +54,17 @@
   (if (nil? node) nil
       (let [diff (compare value (:value node))]
         (cond
-          (neg? diff) (balance (assoc node :left (avl-delete (:left node) value)))
-          (pos? diff) (balance (assoc node :right (avl-delete (:right node) value)))
+          (neg? diff) (avl-balance (assoc node :left (avl-delete (:left node) value)))
+          (pos? diff) (avl-balance (assoc node :right (avl-delete (:right node) value)))
       ;; zero?
           :else (cond
                   (nil? (:left node)) (:right node)
                   (nil? (:right node)) (:left node)
-                  :else (let [min-node (min-value-node (:right node))]
+                  :else (let [min-node (avl-min-value-node (:right node))]
                           (-> min-node
                               (assoc :right (avl-delete (:right node) (:value min-node)))
                               (assoc :left (:left node))
-                              (balance))))))))
+                              (avl-balance))))))))
 
 (defn avl-contains? [node value]
   (if (nil? node) false
@@ -74,20 +74,20 @@
           (pos? diff) (recur (:right node) value)
           :else true))))
 
-(defn empty-avl []
+(defn avl-empty []
   nil)
 
-(defn size [node]
+(defn avl-size [node]
   (if (nil? node) 0
-      (inc (+ (size (:left node)) (size (:right node))))))
+      (inc (+ (avl-size (:left node)) (avl-size (:right node))))))
 
-(defn balanced? [node]
+(defn avl-balanced? [node]
   (if (nil? node) true
-      (let [bf (balance-factor node)]
+      (let [bf (avl-balance-factor node)]
         (cond
           (> bf 1) false
           (< bf -1) false
-          :else (and (balanced? (:left node)) (balanced? (:right node)))))))
+          :else (and (avl-balanced? (:left node)) (avl-balanced? (:right node)))))))
 
 (defn avl-map [node func]
   (if (nil? node) nil
@@ -96,36 +96,36 @@
             new-value (func (:value node))]
         (assoc node :value new-value :left left :right right))))
 
-(defn left-fold [acc node func]
+(defn avl-left-fold [acc node func]
   (cond
     (nil? node) acc
     (nil? acc) nil
     :else (-> acc
-              (left-fold (:left node) func)
+              (avl-left-fold (:left node) func)
               (func (:value node))
-              (left-fold (:right node) func))))
+              (avl-left-fold (:right node) func))))
 
-(defn right-fold [acc node func]
+(defn avl-right-fold [acc node func]
   (cond
     (nil? node) acc
     (nil? acc) nil
     :else (-> acc
-              (right-fold (:right node) func)
+              (avl-right-fold (:right node) func)
               (func (:value node))
-              (right-fold (:left node) func))))
+              (avl-right-fold (:left node) func))))
 
 (defn avl-merge [node1 node2]
   (cond
     (nil? node1) node2
     (nil? node2) node1
-    :else (left-fold node1 node2 add)))
+    :else (avl-left-fold node1 node2 avl-add)))
 
 (defn avl-filter [node func]
   (if (nil? node) nil
       (let [left (avl-filter (:left node) func)
             right (avl-filter (:right node) func)]
         (if (func (:value node))
-          (balance (assoc node :left left :right right))
+          (avl-balance (assoc node :left left :right right))
           (avl-merge left right)))))
 
 (defn -main [])
