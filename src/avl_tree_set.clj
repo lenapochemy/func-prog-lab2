@@ -2,15 +2,14 @@
 
 (defrecord Node [value left right height])
 
-(defrecord AVL-Tree [root])
-
 (defn node-height [node]
   (if (nil? node) 0 (:height node)))
 
 (defn update-node-height [node]
-  (let [new-height (inc (max (node-height (:left node))
-                             (node-height (:right node))))]
-    (assoc node :height new-height)))
+  (if (nil? node) 0
+      (let [new-height (inc (max (node-height (:left node))
+                                 (node-height (:right node))))]
+        (assoc node :height new-height))))
 
 (defn balance-factor [node]
   (- (node-height (:left node)) (node-height (:right node))))
@@ -50,11 +49,6 @@
   (if (nil? (:left node))
     node
     (recur (:left node))))
-
-(defn max-value-node [node]
-  (if (nil? (:right node))
-    node
-    (recur (:right node))))
 
 (defn avl-delete [node value]
   (if (nil? node) nil
@@ -96,25 +90,29 @@
           :else (and (balanced? (:left node)) (balanced? (:right node)))))))
 
 (defn avl-map [node func]
-  (when node
-    (let [left (avl-map (:left node) func)
-          right (avl-map (:right node) func)
-          new-value (func (:value node))]
-      (assoc node :value new-value :left left :right right))))
+  (if (nil? node) nil
+      (let [left (avl-map (:left node) func)
+            right (avl-map (:right node) func)
+            new-value (func (:value node))]
+        (assoc node :value new-value :left left :right right))))
 
 (defn left-fold [acc node func]
-  (if (nil? node) acc
-      (-> acc
-          (left-fold (:left node) func)
-          (func (:value node))
-          (left-fold (:right node) func))))
+  (cond
+    (nil? node) acc
+    (nil? acc) nil
+    :else (-> acc
+              (left-fold (:left node) func)
+              (func (:value node))
+              (left-fold (:right node) func))))
 
 (defn right-fold [acc node func]
-  (if (nil? node) acc
-      (-> acc
-          (right-fold (:right node) func)
-          (func (:value node))
-          (right-fold (:left node) func))))
+  (cond
+    (nil? node) acc
+    (nil? acc) nil
+    :else (-> acc
+              (right-fold (:right node) func)
+              (func (:value node))
+              (right-fold (:left node) func))))
 
 (defn avl-merge [node1 node2]
   (cond
@@ -130,77 +128,6 @@
           (balance (assoc node :left left :right right))
           (avl-merge left right)))))
 
-(defn -main []
-  ;; ;; test for right rotate
-  ;; (def node-a (->Node 'a' nil nil 1))
-  ;; (def node-b (->Node 'b' nil nil 1))
-  ;; (def node-q (->Node 'q' node-a node-b 2))
-  ;; (def node-c (->Node 'c' nil nil 1))
-  ;; (def node-p (->Node 'p' node-q node-c 3))
-  ;; (right-rotate node-p)
-
-  ;; ;; test for left rotate 
-  ;; (def in-right (right-rotate node-p))
-  ;; (left-rotate in-right)
-
-  ;; test for balance
-  ;; (def node-a (->Node 'a' nil nil 1))
-  ;; (def node-b (->Node 'b' nil nil 1))
-  ;; (def node-c (->Node 'c' nil nil 1))
-  ;; (def node-d (->Node 'd' nil nil 1))
-
-  ;; (def node-s (->Node 's' node-b node-c 2))
-  ;; (def node-q (->Node 'q' node-s node-d 3))
-  ;; (def node-p (->Node 'p' node-a node-q 4))
-
-  ;; (balance node-p)
-
-  ;; ;; test for add
-  (def node-10 (->Node 10 nil nil 1))
-  (def node-2 (->Node 2 nil nil 1))
-  (def node-7 (->Node 7 nil node-10 2))
-  (def node-3 (->Node 3 node-2 node-7 3))
-
-  ;; ;; (add node-3 5)
-
-  (def added-node (add node-3 5))
-
-  ;; ;; test for delete
-  ;; (avl-delete added-node 7)
-
-  ;; ;; test for contains?
-  ;; (avl-contains? added-node 3)
-  ;; (avl-contains? added-node 14)
-  ;; (avl-contains? added-node 2)
-  ;; (avl-contains? added-node 10)
-  ;; (avl-contains? added-node 5)
-
-  ;; (size node-3)
-
-  ;; ;; (balanced? (->Node 2 nil added-node 1))
-  ;; (min-value-node added-node)
-  ;; (max-value-node added-node)
-  ;; (avl-map added-node inc)
-
-  (left-fold 0 added-node +)
-  (print added-node)
-
-  (def node-20 (->Node 20 nil nil 1))
-  (def node-0 (->Node 0 nil nil 1))
-  (def node-15 (->Node 15 node-0 node-20 2))
-  (def node-23 (->Node 23 nil nil 1))
-  (def node-28 (->Node 28 nil nil 1))
-  (def node-25 (->Node 25 node-23 node-28 2))
-
-  (avl-merge node-15 node-25)
-  (avl-merge node-25 node-15)
-
-  (print node-23)
-  (left-fold 0 node-15 +)
-
-  (left-fold node-15 node-23 add)
-
-  (def new-tree (avl-merge node-15 node-25))
-  (avl-filter new-tree (fn [x] (and (< 19 x) (< x 25)))))
+(defn -main [])
 
 
