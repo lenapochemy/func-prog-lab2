@@ -120,16 +120,15 @@
   (cond
     (nil? node1) node2
     (nil? node2) node1
-    :else (left-fold node1 node2 add))
-) 
+    :else (left-fold node1 node2 add)))
 
 (defn avl-filter [node func]
   (if (nil? node) nil
-    (let [left (avl-filter (:left node) func)
-          right (avl-filter (:right node) func)]
-      (if (func (:value node))
-        (balance (assoc node :left left :right right))
-        (avl-merge left right)))))
+      (let [left (avl-filter (:left node) func)
+            right (avl-filter (:right node) func)]
+        (if (func (:value node))
+          (balance (assoc node :left left :right right))
+          (avl-merge left right)))))
 
 (defn -main []
   ;; ;; test for right rotate
@@ -186,7 +185,6 @@
   (left-fold 0 added-node +)
   (print added-node)
 
-
   (def node-20 (->Node 20 nil nil 1))
   (def node-0 (->Node 0 nil nil 1))
   (def node-15 (->Node 15 node-0 node-20 2))
@@ -194,8 +192,8 @@
   (def node-28 (->Node 28 nil nil 1))
   (def node-25 (->Node 25 node-23 node-28 2))
 
-(avl-merge node-15 node-25)
-(avl-merge node-25 node-15)
+  (avl-merge node-15 node-25)
+  (avl-merge node-25 node-15)
 
   (print node-23)
   (left-fold 0 node-15 +)
@@ -203,7 +201,6 @@
   (left-fold node-15 node-23 add)
 
   (def new-tree (avl-merge node-15 node-25))
-  (avl-filter new-tree (fn [x] (and (< 19 x) (< x 25))))
-)
+  (avl-filter new-tree (fn [x] (and (< 19 x) (< x 25)))))
 
 
