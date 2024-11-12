@@ -6,6 +6,7 @@
    [avl-tree-set :refer [avl-empty avl-add avl-balanced? avl-delete
                          avl-merge avl-equals?]]))
 
+#_{:clj-kondo/ignore [:unresolved-symbol]}
 (defspec monoid-neutral-element-prop 100
   (prop/for-all [v (gen/set gen/string)]
                 (let [tree (reduce avl-add (avl-empty) v)]
@@ -13,6 +14,7 @@
                    (avl-equals? tree (avl-merge (avl-empty) tree))
                    (avl-equals? tree (avl-merge tree (avl-empty)))))))
 
+#_{:clj-kondo/ignore [:unresolved-symbol]}
 (defspec monoid-associative-prop 100
   (prop/for-all [v1 (gen/set gen/small-integer)
                  v2 (gen/set gen/small-integer)
@@ -26,6 +28,7 @@
                   (avl-balanced? merged1)
                   (avl-balanced? merged2))))
 
+#_{:clj-kondo/ignore [:unresolved-symbol]}
 (defspec add-and-delete-prop 100
   (prop/for-all [set (gen/set gen/small-integer)
                  v (gen/set gen/small-integer)]
@@ -35,4 +38,3 @@
                   (avl-equals? tree deleted)
                   (avl-balanced? added)
                   (avl-balanced? deleted))))
-
