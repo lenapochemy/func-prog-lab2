@@ -36,14 +36,15 @@
       :else (avl-update-node-height node))))
 
 (defn avl-add [node value]
-  (if (nil? node)
-    (->Node value nil nil 1)
-    (let [diff (compare value (:value node))]
-      (cond
-        (zero? diff) (node)
-        (neg? diff) (avl-balance (assoc node :left (avl-add (:left node) value)))
-        ;; pos?
-        :else (avl-balance (assoc node :right (avl-add (:right node) value)))))))
+  (cond
+    (nil? node) (->Node value nil nil 1)
+    (nil? value) node
+    :else  (let [diff (compare value (:value node))]
+             (cond
+               (zero? diff) node
+               (neg? diff) (avl-balance (assoc node :left (avl-add (:left node) value)))
+              ;; pos?
+               :else (avl-balance (assoc node :right (avl-add (:right node) value)))))))
 
 (defn avl-min-value-node [node]
   (if (nil? (:left node))

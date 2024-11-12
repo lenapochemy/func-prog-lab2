@@ -1,5 +1,5 @@
 (ns unit-test
-  (:require [clojure.test :refer [deftest is testing]]
+  (:require [clojure.test :refer [deftest is testing run-tests]]
             [avl-tree-set :refer [->Node avl-empty avl-add avl-node-height
                                   avl-update-node-height avl-contains?
                                   avl-balance avl-balanced? avl-delete
